@@ -262,6 +262,7 @@ const Portfolio = () => {
             </p>
             <p className="mb-4">
               I started my career in <strong>clinical laboratories</strong>, where precision mattered but growth didn't. The work was repetitive, and I needed a field where the ceiling kept rising.
+            </p>
             <p className="mb-4">
               What drew me to software engineering was realizing that code lets you build solutions that scale. I earned a Master's in <strong>Health Informatics</strong> at Cornell and a B.S. in <strong>Computer Science</strong> to make the transition, learning to translate domain problems into technical systems. Previously, as a software engineer at <strong>Memorial Sloan Kettering Cancer Center</strong>, I built platforms that automated grant tracking and streamlined research operations for thousands of users.
             </p>
