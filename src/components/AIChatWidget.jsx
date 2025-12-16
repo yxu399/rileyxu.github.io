@@ -56,6 +56,15 @@ Background: Started as a Clinical Laboratory Technologist before pivoting to eng
 
   const callGeminiChat = async (userQuery) => {
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+
+    // Validate API key exists
+    if (!apiKey) {
+      console.error('API key not configured');
+      throw new Error('API_KEY_MISSING');
+    }
+
+    console.log('API Key present:', !!apiKey);
+
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`;
 
     const systemPrompt = `You are a helpful AI assistant for Riley Xu's portfolio website.
@@ -82,7 +91,8 @@ ${resumeContext}`;
     });
 
     if (!response.ok) {
-      throw new Error('API Request Failed');
+      console.error('API request failed:', response.status, response.statusText);
+      throw new Error('API_REQUEST_FAILED');
     }
 
     const data = await response.json();
@@ -104,10 +114,18 @@ ${resumeContext}`;
       const response = await callGeminiChat(userMessage);
       setMessages(prev => [...prev, { role: 'ai', content: response }]);
     } catch (error) {
-      console.error(error);
+      console.error('Chat error:', error);
+      let errorMessage = "I'm sorry, I encountered an error.";
+
+      if (error.message === 'API_KEY_MISSING') {
+        errorMessage = "⚠️ API key not configured. Please add VITE_GEMINI_API_KEY to your .env file and restart the dev server.";
+      } else if (error.message === 'API_REQUEST_FAILED') {
+        errorMessage = "Failed to connect to AI service. Please check your API key or try again later.";
+      }
+
       setMessages(prev => [...prev, {
         role: 'ai',
-        content: "I'm sorry, I encountered an error. Please make sure the Gemini API key is configured."
+        content: errorMessage
       }]);
     } finally {
       setIsLoading(false);

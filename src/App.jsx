@@ -77,6 +77,17 @@ const Portfolio = () => {
 
       try {
         const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+
+        // Validate API key exists
+        if (!apiKey) {
+          console.error('API key not configured');
+          setAiOutput("⚠️ API key not configured. Please add your Gemini API key to use this feature.");
+          setIsAnalyzing(false);
+          return;
+        }
+
+        console.log('API Key present:', !!apiKey);
+
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`;
 
         const response = await fetch(url, {
@@ -87,12 +98,21 @@ const Portfolio = () => {
           })
         });
 
+        // Add response validation
+        if (!response.ok) {
+          console.error('API request failed:', response.status, response.statusText);
+          throw new Error(`API request failed: ${response.status}`);
+        }
+
         const data = await response.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Could not generate analysis.";
         setAiOutput(text);
       } catch (error) {
-        setAiOutput("Failed to analyze. Please check your API configuration.");
-        console.error(error);
+        console.error('Analysis error:', error);
+        const errorMsg = error.message.includes('API request failed')
+          ? "Failed to analyze. Please check your API key and try again."
+          : "Failed to analyze. Please check your API configuration.";
+        setAiOutput(errorMsg);
       } finally {
         setIsAnalyzing(false);
       }
